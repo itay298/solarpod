@@ -1,0 +1,17 @@
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+{% translate "Power indicator" as power_alt %}
+{% translate "Power in [W]" as power_title %}
+{% translate "Voltage indicator" as voltage_alt %}
+{% translate "Voltage in [V]" as voltage_title %}
+{% translate "Current indicator" as current_alt %}
+{% translate "Current in [A]" as current_title %}
+{% translate "Battery indicator" as battery_alt %}
+{% translate "Battery in [%]" as battery_title %}
+<div class="row mb-4 mt-4">
+    {% include "./card.html" with img_path="imgs/power.jpg" unit="W" alt_title=power_alt unit_title=power_title timestamp=latest_telemetry.timestamp telemetry_data=latest_telemetry.power metric="power" device_id=device.id %}
+    {% include "./card.html" with img_path="imgs/voltage.jpg" unit="V" alt_title=voltage_alt unit_title=voltage_title timestamp=latest_telemetry.timestamp telemetry_data=latest_telemetry.voltage metric="voltage" device_id=device.id %}
+    {% include "./card.html" with img_path="imgs/current.jpg" unit="A" alt_title=current_alt unit_title=current_title timestamp=latest_telemetry.timestamp telemetry_data=latest_telemetry.current metric="current" device_id=device.id %}
+    {% include "./card.html" with img_path="imgs/battery.jpg" unit="%" alt_title=battery_alt unit_title=battery_title timestamp=latest_telemetry.timestamp telemetry_data=latest_telemetry.battery_level metric="battery_level" device_id=device.id %}
+</div>

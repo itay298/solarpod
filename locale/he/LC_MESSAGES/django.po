@@ -1,0 +1,353 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-05 15:29+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
+
+#: .\apps\dashboard\apps.py:6
+msgid "Dashboard"
+msgstr "לוּחַ מַחווָנִים"
+
+#: .\apps\dashboard\models.py:9
+msgid "Device name"
+msgstr "שם המכשיר"
+
+#: .\apps\dashboard\models.py:10
+msgid "Mac address"
+msgstr "כתובת מק"
+
+#: .\apps\dashboard\models.py:11
+msgid "owner"
+msgstr "בַּעַל"
+
+#: .\apps\dashboard\models.py:12
+msgid "Created at"
+msgstr "נוצר ב"
+
+#: .\apps\dashboard\models.py:20
+msgid "Device"
+msgstr "מכשיר"
+
+#: .\apps\dashboard\models.py:21 .\templates\dashboard\index.html:29
+msgid "Devices"
+msgstr "מכשירים"
+
+#: .\apps\dashboard\models.py:25
+msgid "device"
+msgstr "מכשיר"
+
+#: .\apps\dashboard\models.py:26 .\apps\dashboard\models.py:47
+msgid "Timestamp"
+msgstr "חותמת זמן"
+
+#: .\apps\dashboard\models.py:27
+msgid "Voltage"
+msgstr "מֶתַח"
+
+#: .\apps\dashboard\models.py:27
+msgid "Voltage in [v]"
+msgstr "מתח ב-[v]"
+
+#: .\apps\dashboard\models.py:28
+msgid "Current[A]"
+msgstr "זרם[A]"
+
+#: .\apps\dashboard\models.py:28 .\templates\components\dashboard\data.html:9
+msgid "Current in [A]"
+msgstr "זרם ב-[A]"
+
+#: .\apps\dashboard\models.py:29
+msgid "Power"
+msgstr "הספק"
+
+#: .\apps\dashboard\models.py:29 .\templates\components\dashboard\data.html:5
+msgid "Power in [W]"
+msgstr "הספק ב-[W]"
+
+#: .\apps\dashboard\models.py:30
+msgid "battery level"
+msgstr "רמת הסוללה"
+
+#: .\apps\dashboard\models.py:31
+msgid "Tracker angle horizontal"
+msgstr "זווית גשש אופקית"
+
+#: .\apps\dashboard\models.py:32
+msgid "Tracker angle vertical"
+msgstr "זווית גשש אנכית"
+
+#: .\apps\dashboard\models.py:43
+msgid "Telemetry"
+msgstr "טלמטריה"
+
+#: .\apps\dashboard\models.py:44
+msgid "Telemetries"
+msgstr "נתוני טלמטריה"
+
+#: .\apps\dashboard\models.py:48
+msgid "Battery level"
+msgstr "רמת סוללה"
+
+#: .\apps\dashboard\models.py:54
+msgid "Server Health"
+msgstr "בריאות השרת"
+
+#: .\apps\dashboard\models.py:55
+msgid "Servers Health"
+msgstr "בריאות השרתים"
+
+#: .\apps\dashboard\views.py:20
+msgid "Invalid metric"
+msgstr "מדד לא חוקי"
+
+#: .\apps\users\admin.py:13
+msgid "SolarPod admin"
+msgstr "מנהל SolarPod"
+
+#: .\apps\users\apps.py:6 .\apps\users\models.py:8
+msgid "User"
+msgstr "מִשׁתַמֵשׁ"
+
+#: .\apps\users\models.py:9
+msgid "Users"
+msgstr "משתמשים"
+
+#: .\core\settings\base.py:121
+msgid "hebrew"
+msgstr "עִברִית"
+
+#: .\core\settings\base.py:122
+msgid "english"
+msgstr "אַנגְלִית"
+
+#: .\templates\base.html:10 .\templates\base.html:30
+msgid "SolarPod dashboard"
+msgstr "לוח מחוונים של SolarPod"
+
+#: .\templates\base.html:24 .\templates\dashboard\index.html:6
+msgid "Skip to main content"
+msgstr "דלג לתוכן הראשי"
+
+#: .\templates\base.html:40
+#, python-format
+msgid "Hello %(user)s"
+msgstr "שלום %(user)s"
+
+#: .\templates\base.html:44
+msgid "Go to admin panel"
+msgstr "עבור לפאנל הניהול"
+
+#: .\templates\base.html:48
+msgid "Wi-Fi Settings"
+msgstr "הגדרות Wi-Fi"
+
+#: .\templates\base.html:61
+msgid "Error return back "
+msgstr "שגיאה בהחזרה חזרה"
+
+#: .\templates\base.html:61
+msgid "to dashboard"
+msgstr "ללוח המחוונים"
+
+#: .\templates\base.html:71
+msgid "return to dashboard"
+msgstr "לחזור ללוח המחוונים"
+
+#: .\templates\base.html:71
+msgid "return to top"
+msgstr "לחזור למעלה"
+
+#: .\templates\base.html:72
+msgid "copyright"
+msgstr "זְכוּת יְוֹצרִים"
+
+#: .\templates\base.html:73
+msgid "SolarPod, all rights reserved"
+msgstr "SolarPod, כל הזכויות שמורות"
+
+#: .\templates\base.html:78
+msgid "weather data"
+msgstr "נתוני מזג האוויר"
+
+#: .\templates\base.html:79
+msgid "weather data api"
+msgstr "API של נתוני מזג אוויר"
+
+#: .\templates\components\dashboard\card.html:15
+msgid "last updated"
+msgstr "עודכן לאחרונה"
+
+#: .\templates\components\dashboard\card.html:17
+msgid "show time chart"
+msgstr "הצג תרשים זמן"
+
+#: .\templates\components\dashboard\chart.html:17
+msgid "Power History [W]"
+msgstr "היסטוריית הספק [W]"
+
+#: .\templates\components\dashboard\chart.html:18
+msgid "Panel Voltage History [V]"
+msgstr "היסטוריית מתח הפנל [V]"
+
+#: .\templates\components\dashboard\chart.html:19
+msgid "Current History [A]"
+msgstr "היסטוריה זרםת [A]"
+
+#: .\templates\components\dashboard\chart.html:20
+#, python-format
+msgid "Battery precentage History [%%]"
+msgstr "אחוז הסוללה היסטוריה [%%]"
+
+#: .\templates\components\dashboard\chart.html:22
+msgid "Historical Data"
+msgstr "נתונים היסטוריים"
+
+#: .\templates\components\dashboard\chart.html:99
+msgid "Time"
+msgstr "זְמַן"
+
+#: .\templates\components\dashboard\data.html:4
+msgid "Power indicator"
+msgstr "מחוון הספק"
+
+#: .\templates\components\dashboard\data.html:6
+msgid "Voltage indicator"
+msgstr "מחוון מתח"
+
+#: .\templates\components\dashboard\data.html:7
+msgid "Voltage in [V]"
+msgstr "מתח ב-[V]"
+
+#: .\templates\components\dashboard\data.html:8
+msgid "Current indicator"
+msgstr "מחוון זרם"
+
+#: .\templates\components\dashboard\data.html:10
+msgid "Battery indicator"
+msgstr "מחוון סוללה"
+
+#: .\templates\components\dashboard\data.html:11
+#, python-format
+msgid "Battery in [%%]"
+msgstr "סוללה ב-[%%]"
+
+#: .\templates\components\dashboard\modal.html:6
+msgid "Historical Data Chart"
+msgstr "תרשים נתונים היסטוריים"
+
+#: .\templates\components\dashboard\modal.html:12
+msgid "Today"
+msgstr "הַיוֹם"
+
+#: .\templates\components\dashboard\modal.html:13
+msgid "Last 7 Days"
+msgstr "7 הימים האחרונים"
+
+#: .\templates\components\dashboard\modal.html:14
+msgid "Last Month"
+msgstr "חודש שעבר"
+
+#: .\templates\components\users\wifi_modal.html:6
+msgid "Connect to Wi-Fi"
+msgstr "התחבר ל-Wi-Fi"
+
+#: .\templates\components\users\wifi_modal.html:11
+msgid "Scan for Networks"
+msgstr "סרוק לאיתור רשתות"
+
+#: .\templates\components\users\wifi_modal.html:16
+msgid "Scanning..."
+msgstr "סורק..."
+
+#: .\templates\components\users\wifi_modal.html:23
+msgid "Password for"
+msgstr "סיסמה עבור"
+
+#: .\templates\components\users\wifi_modal.html:25
+msgid "Enter network password"
+msgstr "הזן את סיסמת הרשת"
+
+#: .\templates\components\users\wifi_modal.html:27
+msgid "Connect"
+msgstr "לְחַבֵּר"
+
+#: .\templates\components\users\wifi_script.html:59
+msgid "Connecting... Please wait"
+msgstr "מתחבר... אנא המתן"
+
+#: .\templates\components\users\wifi_script.html:72
+msgid "Connected Successfully!"
+msgstr "מחובר בהצלחה!"
+
+#: .\templates\components\users\wifi_script.html:80
+msgid "Failed to connect"
+msgstr "החיבור נכשל"
+
+#: .\templates\components\users\wifi_script.html:85
+msgid "Network error occurred."
+msgstr "אירעה שגיאת רשת."
+
+#: .\templates\dashboard\index.html:4
+msgid "main dashboard"
+msgstr "לוח המחוונים הראשי"
+
+#: .\templates\dashboard\index.html:11
+msgid "Welocome to SolarPod dashboard"
+msgstr "ברוכים הבאים ללוח המחוונים של SolarPod"
+
+#: .\templates\dashboard\index.html:13
+msgid "Here you can see the hub's stats"
+msgstr "כאן אתה יכול לראות את הנתונים הסטטיסטיים של הרכזת"
+
+#: .\templates\dashboard\index.html:15
+#, python-format
+msgid ""
+"The main battery precentage is: <span "
+"id=\"server_battery_health\">%(server)s</span>%%"
+msgstr ""
+"אחוז הסוללה הראשית הוא: <span "
+"id=\"server_battery_health\">%(server)s</span>%%"
+
+#: .\templates\dashboard\index.html:16
+#, python-format
+msgid "last update: <span id=\"server_timestamp\">%(timestamp)s</span>"
+msgstr "עדכון אחרון: <span id=\"server_timestamp\">%(timestamp)s</span>"
+
+#: .\templates\dashboard\index.html:18
+msgid "There is no data on the server!"
+msgstr "אין נתונים בשרת!"
+
+#: .\templates\dashboard\index.html:23
+msgid "server example image"
+msgstr "תמונת שרת לדוגמה"
+
+#: .\templates\dashboard\index.html:32
+#, python-format
+msgid "system: %(device)s"
+msgstr "מערכת: %(device)s"
+
+#: .\templates\dashboard\index.html:36
+msgid "No devices found for this user."
+msgstr "לא נמצאו מכשירים עבור משתמש זה."
+
+#: .\templates\users\login.html:5 .\templates\users\login.html:14
+msgid "Login"
+msgstr "כְּנִיסָה לַמַעֲרֶכֶת"
+
+#: .\templates\users\login.html:10
+msgid "Login to dashboard:"
+msgstr "כניסה ללוח המחוונים:"

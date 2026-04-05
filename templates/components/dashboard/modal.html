@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="modal fade" id="graphModal" tabindex="-1" aria-labelledby="graphModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="graphModalLabel">{% translate "Historical Data Chart" %}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="d-flex justify-content-center mb-3">
+                <div class="btn-group" role="group" aria-label="Time filters">
+                    <button data-graph-btn="day" type="button" class="btn btn-outline-secondary active btn-sm" onclick="fetchAndDrawChart('day')">{% translate "Today" %}</button>
+                    <button data-graph-btn="week" type="button" class="btn btn-outline-secondary btn-sm" onclick="fetchAndDrawChart('week')">{% translate "Last 7 Days" %}</button>
+                    <button data-graph-btn="month" type="button" class="btn btn-outline-secondary btn-sm" onclick="fetchAndDrawChart('month')">{% translate "Last Month" %}</button>
+                </div>
+            </div>
+            <canvas id="timeSeriesChart" width="400" height="200"></canvas>
+        </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+{% load i18n %}
+<div class="modal fade" id="wifiModal" tabindex="-1" aria-labelledby="wifiModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="wifiModalLabel">📶 {% translate "Connect to Wi-Fi" %}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                <div id="wifi-connected-section" class="d-none text-center p-4">
+                    <div class="mb-3">
+                        <span style="font-size: 3rem;">&#x1F4F6;</span>
+                    </div>
+                    <h4 class="text-success mb-2">{% translate "Connected" %}</h4>
+                    <p class="fs-5 mb-4">{% translate "Network" %}: <strong id="current-connected-ssid" class="text-info"></strong></p>
+                    <button class="btn btn-outline-danger px-4" onclick="disconnectWifi()">
+                        &#x1F50C; {% translate "Disconnect" %}
+                    </button>
+                </div>
+
+                <div id="wifi-disconnected-section" class="d-none">
+                    <button id="btn-scan-wifi" class="btn btn-primary w-100 mb-3" onclick="scanWifi()">
+                        🔍 {% translate "Scan for Networks" %}
+                    </button>
+                    
+                    <div id="wifi-loader" class="text-center d-none my-3">
+                        <div class="spinner-border text-info" role="status"></div>
+                        <p class="mt-2">{% translate "Scanning..." %}</p>
+                    </div>
+
+                    <div class="list-group mb-3" id="wifi-list"></div>
+
+                    <div id="password-section" class="d-none bg-secondary p-3 rounded">
+                        <label class="form-label">{% translate "Password for" %} <span id="selected-ssid-label" class="fw-bold text-info"></span>:</label>
+                        <input type="hidden" id="selected-ssid-input">
+                        <input type="password" id="wifi-password" class="form-control mb-2" placeholder="{% translate 'Enter password' %}">
+                        <button class="btn btn-success w-100" onclick="connectWifi()">
+                            {% translate "Connect" %}
+                        </button>
+                        <div id="wifi-status-msg" class="mt-2 text-center fw-bold"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

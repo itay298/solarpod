@@ -1,0 +1,175 @@
+{% load i18n %}
+<script>
+    let timeSeriesChart = null;
+    let currentDevice = null;
+    let currentMetric = null;
+
+    // הפונקציה ששולפת נתונים ומציירת
+    function fetchAndDrawChart(timeRange = 'day') {
+        if (!currentDevice || !currentMetric) return;
+
+        const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+        const apiUrl = `{% url "dashboard:api_chart_data" device_id="0" metric="a" %}/?range=${timeRange}`.replaceAll("0", currentDevice).replaceAll("/a/", `/${currentMetric}`);
+        
+        // עדכון כותרת המודל
+        const modalTitle = document.querySelector('#graphModal .modal-title');
+        const metricNames = {
+            'power': '{% translate "Power History [W]" %}',
+            'voltage': '{% translate "Panel Voltage History [V]" %}',
+            'current': '{% translate "Current History [A]" %}',
+            'battery_level': '{% translate "Battery precentage History [%]" %}'
+        };
+        modalTitle.textContent = metricNames[currentMetric] || '{% translate "Historical Data" %}';
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (timeSeriesChart) {
+                    timeSeriesChart.destroy();
+                }
+
+                // המרה למבנה X ו-Y
+                const timeSeriesData = data.labels.map((timestamp, index) => {
+                    return { x: timestamp, y: data.values[index] };
+                });
+
+                // חישוב גבולות הזמן
+                const now = new Date();
+                let minDate = new Date();
+                let maxDate = new Date(); // הוספנו משתנה חדש לסוף הציר
+                let xAxisUnit = 'hour';
+                const day_btn = document.querySelector(`[data-graph-btn="day"]`)
+                const week_btn = document.querySelector(`[data-graph-btn="week"]`);
+                const month_btn = document.querySelector(`[data-graph-btn="month"]`);
+                day_btn.classList.remove('active');
+                month_btn.classList.remove('active');
+                week_btn.classList.remove('active');
+                if (timeRange === 'week') {
+                    minDate.setDate(now.getDate() - 7);
+                    day_btn.classList.remove('active');
+                    month_btn.classList.remove('active');
+                    week_btn.classList.add('active');
+                    xAxisUnit = 'day';
+                } else if (timeRange === 'month') {
+                    minDate.setMonth(now.getMonth() - 1);
+                    day_btn.classList.remove('active');
+                    month_btn.classList.add('active');
+                    week_btn.classList.remove('active');
+                    xAxisUnit = 'day';
+                } else {
+                    // מצב 'day' - היום הנוכחי (מחצות עד חצות)
+                    minDate.setHours(0, 0, 0, 0);      // תחילת הציר: 00:00
+                    maxDate.setHours(23, 59, 59, 999); // סוף הציר: סוף היום
+                    xAxisUnit = 'hour';
+                    day_btn.classList.add('active');
+                    month_btn.classList.remove('active');
+                    week_btn.classList.remove('active');
+                }
+                timeSeriesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: metricNames[currentMetric],
+                            data: timeSeriesData, 
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: {
+                                type: 'time',
+                                min: minDate.toISOString(),
+                                max: maxDate.toISOString(),
+                                time: {
+                                    unit: xAxisUnit,
+                                    displayFormats: {
+                                        hour: 'HH:mm',
+                                        day: 'dd/MM'
+                                    },
+                                    tooltipFormat: 'dd/MM/yyyy HH:mm'
+                                },
+                                title: {
+                                    display: true,
+                                    text: '{% translate "Time" %}'
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function startLiveUpdates() {
+        // מגדירים לולאה שתרוץ כל 5 שניות (5000 מילישניות)
+        setInterval(() => {
+            // פונים ל-API הכללי שמביא את כל המכשירים
+            const liveUrl = `{% url "dashboard:api_get_all_latest" %}`;
+
+            fetch(liveUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('server_battery_health').textContent = data.server_battery_level;
+                    document.getElementById('server_timestamp').textContent = data.server_timestamp;
+                    // 1. עדכון הכרטיסיות
+                    for (const [deviceId, telemetry] of Object.entries(data.devices)) {
+                        document.querySelectorAll(`[data-live="voltage"][data-device="${deviceId}"]`)
+                            .forEach(el => el.textContent = telemetry.voltage);
+                            
+                        document.querySelectorAll(`[data-live="current"][data-device="${deviceId}"]`)
+                            .forEach(el => el.textContent = telemetry.current);
+                            
+                        document.querySelectorAll(`[data-live="power"][data-device="${deviceId}"]`)
+                            .forEach(el => el.textContent = telemetry.power);
+                            
+                        document.querySelectorAll(`[data-live="battery"][data-device="${deviceId}"]`)
+                            .forEach(el => el.textContent = telemetry.battery_level);
+                            
+                        document.querySelectorAll(`[data-live="time"][data-device="${deviceId}"]`)
+                            .forEach(el => el.textContent = telemetry.timestamp);
+                    }
+                    
+                    // 2. עדכון הגרף (אם הוא פתוח למכשיר כלשהו)
+                    const graphModal = document.getElementById('graphModal');
+                    if (graphModal && graphModal.classList.contains('show')) {
+                        const activeButton = graphModal.querySelector('[data-graph-btn].active'); 
+                        
+                        // התיקון כאן! משתמשים ב-getAttribute כדי לעקוף את בעיית המינוסים
+                        const currentRange = activeButton ? activeButton.getAttribute('data-graph-btn') : "day";
+                        
+                        fetchAndDrawChart(currentRange); 
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching bulk live updates:', error));
+        }, 10000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const graphModal = document.getElementById('graphModal');
+        graphModal.addEventListener('shown.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            currentMetric = button.getAttribute('data-metric');
+            currentDevice = button.getAttribute('data-device-id');
+            fetchAndDrawChart();
+        });
+        startLiveUpdates();
+        graphModal.addEventListener('hidden.bs.modal', event => {
+            const activeBtn = graphModal.querySelector('[data-graph-btn].active');
+            if (activeBtn) { // נוודא שמצאנו כפתור לפני שמורידים לו את המחלקה
+                activeBtn.classList.remove("active");
+            }
+            const dayBtn = graphModal.querySelector('[data-graph-btn="day"]');
+            if (dayBtn) {
+                dayBtn.classList.add("active");
+            }
+        });
+    });
+</script>

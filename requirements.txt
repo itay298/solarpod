@@ -1,0 +1,7 @@
+django
+django-bootstrap5
+python-dotenv
+django-all-in-one-accessibility
+requests
+polib
+deep-translator

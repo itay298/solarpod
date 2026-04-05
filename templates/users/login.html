@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load django_bootstrap5 %}
+
+{% block title %}{% translate "Login" %}{% endblock title %}
+{% block content %}
+<section id="login_section" class="d-flex" style="min-height: 80vh;">
+    <div class="container-fluid my-auto"">
+        <div class="container">
+            <h1 class="text-center">{% translate "Login to dashboard:" %}</h1>
+            <form class="col-md-7 col-lg-5 mx-auto" action="{% url "users:login" %}" method="post" class="form">
+                {% csrf_token %}
+                {% bootstrap_form form layout="floating" %}
+                <button type="submit" class="btn btn-primary w-100 mx-auto">{% translate "Login" %}</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock content %}

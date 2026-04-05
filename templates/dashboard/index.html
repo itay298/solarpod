@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}{% translate "main dashboard" %}{% endblock title %}
+{% block skip %}
+<a class="visually-hidden-focusable" href="#main-dashboard">{% translate "Skip to main content" %}</a>
+{% endblock skip %}
+{% block content %}
+<header>
+    <div class="px-4 pt-5 my-5 text-center border-bottom">
+        <h1 class="display-4 fw-bold text-body-emphasis">{% translate "Welocome to SolarPod dashboard" %}</h1>
+        <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">{% translate "Here you can see the hub's stats" %}</p>
+        {% if server %}
+        <p class="lead mb-4">{% blocktranslate %}The main battery precentage is: <span id="server_battery_health">{{server}}</span>%{% endblocktranslate %}</p>
+        <p class="lead mb-4">{% blocktranslate %}last update: <span id="server_timestamp">{{ timestamp }}</span>{% endblocktranslate %}</p>
+        {% else %}
+        <p class="lead mb-4">{% translate "There is no data on the server!" %}</p>
+        {% endif %}
+        </div>
+        <div class="overflow-hidden" style="max-height: 30vh;">
+        <div class="container px-5"> <img src="{% static "imgs/server.jpg" %}" class="img-fluid border rounded-3 shadow-lg mb-4"
+            alt="{% translate "server example image" %}" width="700" height="500" loading="lazy"></div>
+        </div>
+    </div>
+</header>
+<main id="main-dashboard">
+    <section id="device-data">
+        <h1>{% translate "Devices" %}</h1>
+        {% for device in devices %}
+        <hr>
+        <p class="mt-4 h3 text-secondary">{% blocktranslate %}system: {{ device }}{% endblocktranslate %}</p>
+        {% include "../components/dashboard/data.html" with device=device latest_telemetry=device.latest_telemetry %}
+        {% empty %}
+        <div class="alert alert-info mt-4">
+            {% translate "No devices found for this user." %}
+        </div>
+        {% endfor %}
+    </section>
+</main>
+{% include "../components/dashboard/modal.html" %}
+{% include "../components/users/wifi_modal.html" %}
+{% endblock content %}
+
+{% block script %}
+{% include "../components/users/wifi_script.html" %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+{% include "../components/dashboard/chart.html" %}
+{% endblock script %}

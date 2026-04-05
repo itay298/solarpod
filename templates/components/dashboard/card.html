@@ -1,0 +1,21 @@
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+<div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+    <div class="card shadow-sm h-100 border-success">
+        {% if img_path != "None" %}
+        <img src="{% static img_path %}" class="card-img-top object-fit-cover p-2" alt="{{alt_title}}" style="max-height:150px;">
+        {% endif %}
+        <div class="card-body text-center d-flex flex-column">
+            <h5 class="card-title text-success">{{ unit_title }}</h5>
+            <div class="data" dir="ltr">
+                <span data-live="{{ metric }}" data-device="{{ device_id }}" class="display-6 fw-bold">{{ telemetry_data|default:"0" }}</span>
+                <span class="display-6 fw-bold">{{ unit }}</span>
+            </div>
+            <p class="card-text text-muted small mt-auto">{% translate "last updated" %}: <span data-live="time" data-device="{{ device_id }}">{{ timestamp|naturaltime }}</span></p>
+            <button type="button" class="btn btn-outline-success btn-sm w-100" data-bs-toggle="modal" data-bs-target="#graphModal" data-metric="{{metric}}" data-device-id="{{ device_id }}">
+                {% translate "show time chart" %}
+            </button>
+        </div>
+    </div>
+</div>

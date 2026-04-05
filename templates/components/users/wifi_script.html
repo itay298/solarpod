@@ -1,0 +1,153 @@
+{% load i18n %}
+<script>
+    // פונקציה 1: סריקת רשתות
+function scanWifi() {
+    const loader = document.getElementById('wifi-loader');
+    const wifiList = document.getElementById('wifi-list');
+    const passSection = document.getElementById('password-section');
+    
+    // ניקוי מצב קודם והצגת טעינה
+    wifiList.innerHTML = '';
+    passSection.classList.add('d-none');
+    loader.classList.remove('d-none');
+
+    fetch('{% url "users:api_scan_wifi" %}')
+        .then(response => response.json())
+        .then(data => {
+            loader.classList.add('d-none');
+            
+            if (data.status === 'success' || data.status === 'mock') {
+                data.networks.forEach(net => {
+                    // יצירת כפתור עבור כל רשת
+                    const btn = document.createElement('button');
+                    btn.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center';
+                    
+                    // אינדיקטור קליטה פשוט
+                    let signalIcon = '&#x1F4F6;';
+                    if (parseInt(net.signal) < 40) signalIcon = '&#x1F4C9;';
+                    
+                    btn.innerHTML = `<span>${net.ssid}</span> <span>${signalIcon} ${net.signal}%</span>`;
+                    
+                    // כשלוחצים על הרשת, מציגים את שדה הסיסמה
+                    btn.onclick = () => {
+                        document.getElementById('selected-ssid-label').textContent = net.ssid;
+                        document.getElementById('selected-ssid-input').value = net.ssid;
+                        document.getElementById('wifi-password').value = '';
+                        document.getElementById('wifi-status-msg').textContent = '';
+                        passSection.classList.remove('d-none');
+                    };
+                    
+                    wifiList.appendChild(btn);
+                });
+            } else {
+                wifiList.innerHTML = `<div class="alert alert-danger">Error scanning networks.</div>`;
+            }
+        })
+        .catch(error => {
+            loader.classList.add('d-none');
+            console.error('WiFi Scan Error:', error);
+        });
+}
+
+// פונקציה חדשה: בודקת את המצב ומחליפה מסכים בהתאם
+function checkWifiStatus() {
+    fetch('{% url "users:api_wifi_status" %}')
+        .then(response => response.json())
+        .then(data => {
+            const connectedSection = document.getElementById('wifi-connected-section');
+            const disconnectedSection = document.getElementById('wifi-disconnected-section');
+            
+            if (data.status === 'connected') {
+                // אנחנו מחוברים! מציגים את המסך הירוק
+                document.getElementById('current-connected-ssid').textContent = data.ssid;
+                connectedSection.classList.remove('d-none');
+                disconnectedSection.classList.add('d-none');
+            } else {
+                // אנחנו מנותקים. מציגים את מסך הסריקה
+                connectedSection.classList.add('d-none');
+                disconnectedSection.classList.remove('d-none');
+                // בונוס: מתחילים סריקה אוטומטית מיד כשמגלים שמנותקים
+                scanWifi();
+            }
+        })
+        .catch(err => console.error("Error checking WiFi status:", err));
+}
+
+// פונקציה חדשה: התנתקות
+function disconnectWifi() {
+    if(!confirm('{% translate "Are you sure you want to disconnect?" %}')) return;
+    
+    fetch('api_wifi_disconnect', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                // התנתקנו בהצלחה! נבדוק סטטוס מחדש (מה שיעביר אותנו אוטומטית למסך הסריקה)
+                checkWifiStatus();
+            }
+        });
+}
+
+// עדכון קטן לפונקציית connectWifi הקיימת:
+// בתוך ה-fetch של ההתחברות, כשהסטטוס הוא 'success' (במקום לסגור את המודל):
+// data.status === 'success' => checkWifiStatus();
+
+// פונקציה 2: התחברות לרשת
+function connectWifi() {
+    const ssid = document.getElementById('selected-ssid-input').value;
+    const password = document.getElementById('wifi-password').value;
+    const statusMsg = document.getElementById('wifi-status-msg');
+    
+    statusMsg.className = 'mt-2 text-center fw-bold text-warning';
+    statusMsg.textContent = '{% translate "Connecting... Please wait" %}';
+
+    fetch('users:api_connect_wifi', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ssid: ssid, password: password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            statusMsg.className = 'mt-2 text-center fw-bold text-success';
+            statusMsg.textContent = '{% translate "Connected Successfully!" %}';
+            // סגירת המודל אוטומטית אחרי 2 שניות
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('wifiModal'));
+                if(modal) modal.hide();
+            }, 2000);
+        } else {
+            statusMsg.className = 'mt-2 text-center fw-bold text-danger';
+            statusMsg.textContent = data.error || '{% translate "Failed to connect" %}';
+        }
+    })
+    .catch(error => {
+        statusMsg.className = 'mt-2 text-center fw-bold text-danger';
+        statusMsg.textContent = '{% translate "Network error occurred." %}';
+    });
+}
+
+// פונקציה 3: הקפצה אוטומטית ("גם וגם")
+document.addEventListener("DOMContentLoaded", function() {
+    const wifiModalEl = document.getElementById('wifiModal');
+    if (wifiModalEl) {
+        wifiModalEl.addEventListener('show.bs.modal', function () {
+            checkWifiStatus();
+        });
+    }
+    const hasSeenWifiModal = sessionStorage.getItem('wifiModalShown');
+    
+    if (!hasSeenWifiModal) {
+        // מסמנים שהראינו לו
+        sessionStorage.setItem('wifiModalShown', 'true');
+        
+        // מקפיצים את המודל
+        const myModal = new bootstrap.Modal(document.getElementById('wifiModal'));
+        myModal.show();
+        
+        // בונוס: מתחילים סריקה אוטומטית ברגע שהמודל עולה כדי לחסוך קליק
+        scanWifi();
+    }
+});
+</script>
