@@ -116,10 +116,11 @@ def dashboard_view(request):
     user_devices = Device.objects.filter(owner=request.user)
     server = ServerHealth.objects.order_by('-timestamp').first()
     battery_level = server.battery_level if server is not None else None
+    timestamp = naturaltime(server.timestamp) if server is not None else None
     context = {
         'devices': user_devices,
         'server': battery_level,
-        'timestamp':naturaltime(server.timestamp)
+        'timestamp': timestamp
     }
     
     return render(request, 'dashboard/index.html', context)
