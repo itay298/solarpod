@@ -85,7 +85,8 @@
   </footer>
   {% include "components/base/lang_btn.html" %}
   {% bootstrap_javascript %}
-  <script id="aioa-adawidget" src="{{ AIOA_URL }}&lang={{ LANGUAGE_CODE }}"></script>
+  {# &lang={{ LANGUAGE_CODE }} #}
+  <script id="aioa-adawidget" src="{{ AIOA_URL }}"></script>
   {% block script %}{% endblock script %}
 
 </body>

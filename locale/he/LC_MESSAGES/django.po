@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-05 15:29+0300\n"
+"POT-Creation-Date: 2026-04-06 17:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -265,39 +265,55 @@ msgstr "חודש שעבר"
 msgid "Connect to Wi-Fi"
 msgstr "התחבר ל-Wi-Fi"
 
-#: .\templates\components\users\wifi_modal.html:11
+#: .\templates\components\users\wifi_modal.html:15
+msgid "Connected"
+msgstr "מְחוּבָּר"
+
+#: .\templates\components\users\wifi_modal.html:16
+msgid "Network"
+msgstr "רֶשֶׁת"
+
+#: .\templates\components\users\wifi_modal.html:18
+msgid "Disconnect"
+msgstr "לְנַתֵק"
+
+#: .\templates\components\users\wifi_modal.html:24
 msgid "Scan for Networks"
 msgstr "סרוק לאיתור רשתות"
 
-#: .\templates\components\users\wifi_modal.html:16
+#: .\templates\components\users\wifi_modal.html:29
 msgid "Scanning..."
 msgstr "סורק..."
 
-#: .\templates\components\users\wifi_modal.html:23
+#: .\templates\components\users\wifi_modal.html:35
 msgid "Password for"
 msgstr "סיסמה עבור"
 
-#: .\templates\components\users\wifi_modal.html:25
-msgid "Enter network password"
-msgstr "הזן את סיסמת הרשת"
+#: .\templates\components\users\wifi_modal.html:37
+msgid "Enter password"
+msgstr "הזן סיסמה"
 
-#: .\templates\components\users\wifi_modal.html:27
+#: .\templates\components\users\wifi_modal.html:39
 msgid "Connect"
 msgstr "לְחַבֵּר"
 
-#: .\templates\components\users\wifi_script.html:59
+#: .\templates\components\users\wifi_script.html:78
+msgid "Are you sure you want to disconnect?"
+msgstr "האם אתה בטוח שברצונך להתנתק?"
+
+#: .\templates\components\users\wifi_script.html:101
 msgid "Connecting... Please wait"
 msgstr "מתחבר... אנא המתן"
 
-#: .\templates\components\users\wifi_script.html:72
+#: .\templates\components\users\wifi_script.html:114
 msgid "Connected Successfully!"
 msgstr "מחובר בהצלחה!"
 
-#: .\templates\components\users\wifi_script.html:80
+#: .\templates\components\users\wifi_script.html:122
 msgid "Failed to connect"
 msgstr "החיבור נכשל"
 
-#: .\templates\components\users\wifi_script.html:85
+#: .\templates\components\users\wifi_script.html:127
 msgid "Network error occurred."
 msgstr "אירעה שגיאת רשת."
 
