@@ -115,9 +115,10 @@ def dashboard_view(request):
     # שולפים רק את המערכות ששייכות למשתמש שגולש כרגע
     user_devices = Device.objects.filter(owner=request.user)
     server = ServerHealth.objects.order_by('-timestamp').first()
+    battery_level = server.battery_level if server is not None else None
     context = {
         'devices': user_devices,
-        'server': server.battery_level,
+        'server': battery_level,
         'timestamp':naturaltime(server.timestamp)
     }
     
