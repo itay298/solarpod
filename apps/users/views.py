@@ -41,7 +41,44 @@ def api_scan_wifi(request):
         })
         
 @csrf_exempt
+@csrf_exempt
 def api_connect_wifi(request):
+    """ מקבל שם רשת וסיסמה, ומחבר את ה-Raspberry Pi לאינטרנט """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            ssid = data.get('ssid')
+            password = data.get('password')
+            
+            if not ssid:
+                return JsonResponse({'error': 'SSID is required'}, status=400)
+
+            if platform.system() == 'Linux':
+                # --- החיסון נגד פרופילי רפאים ---
+                # מנסים למחוק את החיבור הישן מהזיכרון. 
+                # אם הוא לא קיים, הפקודה פשוט תיכשל בשקט (ולכן אין check=True)
+                subprocess.run(['sudo', 'nmcli', 'connection', 'delete', ssid], capture_output=True)
+                
+                # --- יצירת החיבור החדש והנקי ---
+                command = ['sudo', 'nmcli', 'dev', 'wifi', 'connect', ssid]
+                if password:
+                    command.extend(['password', password])
+                command.extend(['ifname', 'wlan1'])
+                
+                subprocess.run(command, capture_output=True, text=True, check=True)
+                
+                return JsonResponse({'status': 'success', 'message': f'Successfully connected to {ssid}'})
+            else:
+                return JsonResponse({'status': 'success', 'message': 'Simulated connection on Windows'})
+                
+        except subprocess.CalledProcessError as e:
+            # במקרה של שגיאה, נשלוף בדיוק את הטקסט שלינוקס הדפיס
+            error_msg = e.stderr if e.stderr else e.stdout
+            return JsonResponse({'error': f'Failed to connect. Details: {error_msg}'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+            
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
     """ מקבל שם רשת וסיסמה, ומחבר את ה-Raspberry Pi לאינטרנט """
     if request.method == 'POST':
         try:
