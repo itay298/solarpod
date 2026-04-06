@@ -41,9 +41,8 @@ def api_scan_wifi(request):
         })
         
 @csrf_exempt
-@csrf_exempt
 def api_connect_wifi(request):
-    """ מקבל שם רשת וסיסמה, ומחבר את ה-Raspberry Pi לאינטרנט """
+    """ מקבל שם רשת וסיסמה, ובונה פרופיל חיבור קשיח כדי לעקוף שגיאות זיהוי """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -54,54 +53,27 @@ def api_connect_wifi(request):
                 return JsonResponse({'error': 'SSID is required'}, status=400)
 
             if platform.system() == 'Linux':
-                # --- החיסון נגד פרופילי רפאים ---
-                # מנסים למחוק את החיבור הישן מהזיכרון. 
-                # אם הוא לא קיים, הפקודה פשוט תיכשל בשקט (ולכן אין check=True)
+                # 1. מחיקת פרופיל ישן כדי למנוע התנגשויות
                 subprocess.run(['sudo', 'nmcli', 'connection', 'delete', ssid], capture_output=True)
                 
-                # --- יצירת החיבור החדש והנקי ---
-                command = ['sudo', 'nmcli', 'dev', 'wifi', 'connect', ssid]
                 if password:
-                    command.extend(['password', password])
-                command.extend(['ifname', 'wlan1'])
-                
-                subprocess.run(command, capture_output=True, text=True, check=True)
+                    # בניית פרופיל ידני לרשת עם סיסמה (שיטת הפטיש שעבדה לנו)
+                    subprocess.run(['sudo', 'nmcli', 'connection', 'add', 'type', 'wifi', 'ifname', 'wlan1', 'con-name', ssid, 'ssid', ssid], check=True)
+                    subprocess.run(['sudo', 'nmcli', 'connection', 'modify', ssid, 'wifi-sec.key-mgmt', 'wpa-psk'], check=True)
+                    subprocess.run(['sudo', 'nmcli', 'connection', 'modify', ssid, 'wifi-sec.psk', password], check=True)
+                    # הפעלת החיבור
+                    subprocess.run(['sudo', 'nmcli', 'connection', 'up', ssid], capture_output=True, text=True, check=True)
+                else:
+                    # חיבור לרשת פתוחה (ללא סיסמה) - כאן לינוקס בדרך כלל לא מסתבך
+                    subprocess.run(['sudo', 'nmcli', 'dev', 'wifi', 'connect', ssid, 'ifname', 'wlan1'], capture_output=True, text=True, check=True)
                 
                 return JsonResponse({'status': 'success', 'message': f'Successfully connected to {ssid}'})
             else:
                 return JsonResponse({'status': 'success', 'message': 'Simulated connection on Windows'})
                 
         except subprocess.CalledProcessError as e:
-            # במקרה של שגיאה, נשלוף בדיוק את הטקסט שלינוקס הדפיס
             error_msg = e.stderr if e.stderr else e.stdout
             return JsonResponse({'error': f'Failed to connect. Details: {error_msg}'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-            
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
-    """ מקבל שם רשת וסיסמה, ומחבר את ה-Raspberry Pi לאינטרנט """
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            ssid = data.get('ssid')
-            password = data.get('password')
-            
-            if not ssid:
-                return JsonResponse({'error': 'SSID is required'}, status=400)
-
-            # פקודת ההתחברות בלינוקס:
-            # sudo nmcli dev wifi connect "SSID_NAME" password "PASSWORD" ifname wlan1
-            command = ['sudo', 'nmcli', 'dev', 'wifi', 'connect', ssid]
-            if password:
-                command.extend(['password', password])
-            command.extend(['ifname', 'wlan1'])
-            
-            subprocess.run(command, capture_output=True, text=True, check=True)
-            
-            return JsonResponse({'status': 'success', 'message': f'Successfully connected to {ssid}'})
-            
-        except subprocess.CalledProcessError as e:
-            return JsonResponse({'error': f'Failed to connect. Check password. Details: {e.stderr}'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
             
