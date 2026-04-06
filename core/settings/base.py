@@ -146,3 +146,5 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR.joinpath(STATIC_URL)
 ]
+
+STATIC_ROOT = BASE_DIR.joinpath('staticfiles/')
