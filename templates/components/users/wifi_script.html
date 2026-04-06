@@ -77,7 +77,7 @@ function checkWifiStatus() {
 function disconnectWifi() {
     if(!confirm('{% translate "Are you sure you want to disconnect?" %}')) return;
     
-    fetch('api_wifi_disconnect', { method: 'POST' })
+    fetch('{% url "users:api_wifi_disconnect" %}', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
             if(data.status === 'success') {
@@ -100,7 +100,7 @@ function connectWifi() {
     statusMsg.className = 'mt-2 text-center fw-bold text-warning';
     statusMsg.textContent = '{% translate "Connecting... Please wait" %}';
 
-    fetch('users:api_connect_wifi', {
+    fetch('{% url "users:api_connect_wifi" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

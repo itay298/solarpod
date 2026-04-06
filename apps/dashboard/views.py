@@ -131,8 +131,8 @@ def api_get_all_latest(request):
     """
     latest_data = {}
     server = ServerHealth.objects.order_by('-timestamp').first()
-    server_battery_level = server.battery_level
-    server_timestamp = naturaltime(server.timestamp)
+    server_battery_level = server.battery_level if server is not None else None
+    server_timestamp = naturaltime(server.timestamp) if server is not None else None
     # עוברים על כל המכשירים במסד הנתונים
     # (אם יש לך מערכת משתמשים, כדאי לסנן פה רק את המכשירים של המשתמש הנוכחי)
     devices = Device.objects.all()
