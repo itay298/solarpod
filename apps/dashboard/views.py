@@ -13,6 +13,7 @@ import subprocess
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .hardware import read_ads1115
 
 def get_chart_data(request, device_id, metric):
     allowed_metrics = ['power', 'voltage', 'current', 'battery_level']
@@ -115,11 +116,18 @@ def dashboard_view(request):
     # שולפים רק את המערכות ששייכות למשתמש שגולש כרגע
     user_devices = Device.objects.filter(owner=request.user)
     server = ServerHealth.objects.order_by('-timestamp').first()
-    battery_level = server.battery_level if server is not None else None
+    real_battery_level = server.battery_level if server is not None else None
+    if platform.system() == 'Linux':
+        # 2. דוגמים את החומרה האמיתית בזמן אמת! (ערוץ 0 של ה-I2C)
+        try:
+            real_battery_voltage = read_ads1115(channel=0)
+        except Exception as e:
+            real_battery_voltage = "Error"
+            print(f"Hardware read error: {e}")
     timestamp = naturaltime(server.timestamp) if server is not None else None
     context = {
         'devices': user_devices,
-        'server': battery_level,
+        'server': real_battery_level,
         'timestamp': timestamp
     }
     

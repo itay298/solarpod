@@ -5,3 +5,4 @@ django-all-in-one-accessibility
 requests
 polib
 deep-translator
+smbus
