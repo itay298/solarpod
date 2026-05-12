@@ -96,8 +96,9 @@ def api_receive_telemetry(request):
                 device=device,
                 voltage=data.get('voltage', 0.00),
                 current=data.get('current', 0.0000),
-                power=data.get('power', 0.000),
-                battery_level=data.get('battery_level', 0)
+                battery_level=data.get('battery_level', 0),
+                tracker_angle_x=data.get('tracker_angle_x'),
+                tracker_angle_y=data.get('tracker_angle_y')
             )
             
             # 3. החזרת תשובה חיובית למכשיר (כדי שידע שהכל עבר בשלום)
