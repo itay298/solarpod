@@ -62,10 +62,8 @@ def get_chart_data(request, device_id, metric):
 def api_receive_server(request):
     if request.method == 'POST':
         try:
-            
-            data = json.loads(request.body)
-            battery_level = data.get('battery_level')
-            ServerHealth.objects.create(battery_level=battery_level)
+            real_battery_voltage = read_ads1115(channel=0)
+            ServerHealth.objects.create(battery_level=real_battery_voltage)
             return JsonResponse({'status': 'success', 'message': 'Data saved correctly'}, status=201)
         
         except json.JSONDecodeError:
@@ -90,12 +88,15 @@ def api_receive_telemetry(request):
                 device = Device.objects.get(mac_address=mac_address)
             except Device.DoesNotExist:
                 return JsonResponse({'error': 'Unauthorized device'}, status=403)
-            
+            current_value = read_ads1115(channel=1)
+            if current_value is None:
+                current_value = 0.0
+
             # 2. שמירת הנתונים: המכשיר חוקי, בוא נשמור את הטלמטריה
             Telemetry.objects.create(
                 device=device,
                 voltage=data.get('voltage', 0.00),
-                current=data.get('current', 0.0000),
+                current=current_value,
                 battery_level=data.get('battery_level', 0),
                 tracker_angle_x=data.get('tracker_angle_x'),
                 tracker_angle_y=data.get('tracker_angle_y')
@@ -118,13 +119,6 @@ def dashboard_view(request):
     user_devices = Device.objects.filter(owner=request.user)
     server = ServerHealth.objects.order_by('-timestamp').first()
     real_battery_level = server.battery_level if server is not None else None
-    if platform.system() == 'Linux':
-        # 2. דוגמים את החומרה האמיתית בזמן אמת! (ערוץ 0 של ה-I2C)
-        try:
-            real_battery_voltage = read_ads1115(channel=0)
-        except Exception as e:
-            real_battery_voltage = "Error"
-            print(f"Hardware read error: {e}")
     timestamp = naturaltime(server.timestamp) if server is not None else None
     context = {
         'devices': user_devices,
