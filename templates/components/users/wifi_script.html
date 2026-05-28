@@ -7,44 +7,50 @@ function scanWifi() {
     const passSection = document.getElementById('password-section');
     
     // ניקוי מצב קודם והצגת טעינה
-    wifiList.innerHTML = '';
-    passSection.classList.add('d-none');
-    loader.classList.remove('d-none');
+    if (wifiList) wifiList.innerHTML = '';
+    if (passSection) passSection.classList.add('d-none');
+    if (loader) loader.classList.remove('d-none');
 
     fetch('{% url "users:api_scan_wifi" %}')
         .then(response => response.json())
         .then(data => {
-            loader.classList.add('d-none');
+            if (loader) loader.classList.add('d-none');
             
             if (data.status === 'success' || data.status === 'mock') {
-                data.networks.forEach(net => {
-                    // יצירת כפתור עבור כל רשת
-                    const btn = document.createElement('button');
-                    btn.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center';
-                    
-                    // אינדיקטור קליטה פשוט
-                    let signalIcon = '&#x1F4F6;';
-                    if (parseInt(net.signal) < 40) signalIcon = '&#x1F4C9;';
-                    
-                    btn.innerHTML = `<span>${net.ssid}</span> <span>${signalIcon} ${net.signal}%</span>`;
-                    
-                    // כשלוחצים על הרשת, מציגים את שדה הסיסמה
-                    btn.onclick = () => {
-                        document.getElementById('selected-ssid-label').textContent = net.ssid;
-                        document.getElementById('selected-ssid-input').value = net.ssid;
-                        document.getElementById('wifi-password').value = '';
-                        document.getElementById('wifi-status-msg').textContent = '';
-                        passSection.classList.remove('d-none');
-                    };
-                    
-                    wifiList.appendChild(btn);
-                });
+                if (wifiList) {
+                    data.networks.forEach(net => {
+                        // יצירת כפתור עבור כל רשת
+                        const btn = document.createElement('button');
+                        btn.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center';
+                        
+                        // אינדיקטור קליטה פשוט
+                        let signalIcon = '&#x1F4F6;';
+                        if (parseInt(net.signal) < 40) signalIcon = '&#x1F4C9;';
+                        
+                        btn.innerHTML = `<span>${net.ssid}</span> <span>${signalIcon} ${net.signal}%</span>`;
+                        
+                        // כשלוחצים על הרשת, מציגים את שדה הסיסמה
+                        btn.onclick = () => {
+                            const label = document.getElementById('selected-ssid-label');
+                            if (label) label.textContent = net.ssid;
+                            const input = document.getElementById('selected-ssid-input');
+                            if (input) input.value = net.ssid;
+                            const pass = document.getElementById('wifi-password');
+                            if (pass) pass.value = '';
+                            const msg = document.getElementById('wifi-status-msg');
+                            if (msg) msg.textContent = '';
+                            if (passSection) passSection.classList.remove('d-none');
+                        };
+                        
+                        wifiList.appendChild(btn);
+                    });
+                }
             } else {
-                wifiList.innerHTML = `<div class="alert alert-danger">Error scanning networks.</div>`;
+                if (wifiList) wifiList.innerHTML = `<div class="alert alert-danger">Error scanning networks.</div>`;
             }
         })
         .catch(error => {
-            loader.classList.add('d-none');
+            if (loader) loader.classList.add('d-none');
             console.error('WiFi Scan Error:', error);
         });
 }
@@ -59,13 +65,14 @@ function checkWifiStatus() {
             
             if (data.status === 'connected') {
                 // אנחנו מחוברים! מציגים את המסך הירוק
-                document.getElementById('current-connected-ssid').textContent = data.ssid;
-                connectedSection.classList.remove('d-none');
-                disconnectedSection.classList.add('d-none');
+                const ssidEl = document.getElementById('current-connected-ssid');
+                if (ssidEl) ssidEl.textContent = data.ssid;
+                if (connectedSection) connectedSection.classList.remove('d-none');
+                if (disconnectedSection) disconnectedSection.classList.add('d-none');
             } else {
                 // אנחנו מנותקים. מציגים את מסך הסריקה
-                connectedSection.classList.add('d-none');
-                disconnectedSection.classList.remove('d-none');
+                if (connectedSection) connectedSection.classList.add('d-none');
+                if (disconnectedSection) disconnectedSection.classList.remove('d-none');
                 // בונוס: מתחילים סריקה אוטומטית מיד כשמגלים שמנותקים
                 scanWifi();
             }
@@ -93,12 +100,16 @@ function disconnectWifi() {
 
 // פונקציה 2: התחברות לרשת
 function connectWifi() {
-    const ssid = document.getElementById('selected-ssid-input').value;
-    const password = document.getElementById('wifi-password').value;
+    const ssidInput = document.getElementById('selected-ssid-input');
+    const ssid = ssidInput ? ssidInput.value : '';
+    const passInput = document.getElementById('wifi-password');
+    const password = passInput ? passInput.value : '';
     const statusMsg = document.getElementById('wifi-status-msg');
     
-    statusMsg.className = 'mt-2 text-center fw-bold text-warning';
-    statusMsg.textContent = '{% translate "Connecting... Please wait" %}';
+    if (statusMsg) {
+        statusMsg.className = 'mt-2 text-center fw-bold text-warning';
+        statusMsg.textContent = '{% translate "Connecting... Please wait" %}';
+    }
 
     fetch('{% url "users:api_connect_wifi" %}', {
         method: 'POST',
@@ -110,21 +121,30 @@ function connectWifi() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            statusMsg.className = 'mt-2 text-center fw-bold text-success';
-            statusMsg.textContent = '{% translate "Connected Successfully!" %}';
+            if (statusMsg) {
+                statusMsg.className = 'mt-2 text-center fw-bold text-success';
+                statusMsg.textContent = '{% translate "Connected Successfully!" %}';
+            }
             // סגירת המודל אוטומטית אחרי 2 שניות
             setTimeout(() => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('wifiModal'));
-                if(modal) modal.hide();
+                const modalEl = document.getElementById('wifiModal');
+                if (modalEl) {
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if(modal) modal.hide();
+                }
             }, 2000);
         } else {
-            statusMsg.className = 'mt-2 text-center fw-bold text-danger';
-            statusMsg.textContent = data.error || '{% translate "Failed to connect" %}';
+            if (statusMsg) {
+                statusMsg.className = 'mt-2 text-center fw-bold text-danger';
+                statusMsg.textContent = data.error || '{% translate "Failed to connect" %}';
+            }
         }
     })
     .catch(error => {
-        statusMsg.className = 'mt-2 text-center fw-bold text-danger';
-        statusMsg.textContent = '{% translate "Network error occurred." %}';
+        if (statusMsg) {
+            statusMsg.className = 'mt-2 text-center fw-bold text-danger';
+            statusMsg.textContent = '{% translate "Network error occurred." %}';
+        }
     });
 }
 
@@ -135,19 +155,20 @@ document.addEventListener("DOMContentLoaded", function() {
         wifiModalEl.addEventListener('show.bs.modal', function () {
             checkWifiStatus();
         });
-    }
-    const hasSeenWifiModal = sessionStorage.getItem('wifiModalShown');
-    
-    if (!hasSeenWifiModal) {
-        // מסמנים שהראינו לו
-        sessionStorage.setItem('wifiModalShown', 'true');
+
+        const hasSeenWifiModal = sessionStorage.getItem('wifiModalShown');
         
-        // מקפיצים את המודל
-        const myModal = new bootstrap.Modal(document.getElementById('wifiModal'));
-        myModal.show();
-        
-        // בונוס: מתחילים סריקה אוטומטית ברגע שהמודל עולה כדי לחסוך קליק
-        scanWifi();
+        if (!hasSeenWifiModal) {
+            // מסמנים שהראינו לו
+            sessionStorage.setItem('wifiModalShown', 'true');
+            
+            // מקפיצים את המודל
+            const myModal = new bootstrap.Modal(wifiModalEl);
+            myModal.show();
+            
+            // בונוס: מתחילים סריקה אוטומטית ברגע שהמודל עולה כדי לחסוך קליק
+            scanWifi();
+        }
     }
 });
 </script>

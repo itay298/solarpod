@@ -8,7 +8,9 @@
     function fetchAndDrawChart(timeRange = 'day') {
         if (!currentDevice || !currentMetric) return;
 
-        const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+        const canvas = document.getElementById('timeSeriesChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
         const apiUrl = `{% url "dashboard:api_chart_data" device_id="0" metric="a" %}/?range=${timeRange}`.replaceAll("0", currentDevice).replaceAll("/a/", `/${currentMetric}`);
         
         // עדכון כותרת המודל
@@ -19,7 +21,9 @@
             'current': '{% translate "Current History [A]" %}',
             'battery_level': '{% translate "Battery precentage History [%]" %}'
         };
-        modalTitle.textContent = metricNames[currentMetric] || '{% translate "Historical Data" %}';
+        if (modalTitle) {
+            modalTitle.textContent = metricNames[currentMetric] || '{% translate "Historical Data" %}';
+        }
 
         fetch(apiUrl)
             .then(response => response.json())
@@ -41,29 +45,25 @@
                 const day_btn = document.querySelector(`[data-graph-btn="day"]`)
                 const week_btn = document.querySelector(`[data-graph-btn="week"]`);
                 const month_btn = document.querySelector(`[data-graph-btn="month"]`);
-                day_btn.classList.remove('active');
-                month_btn.classList.remove('active');
-                week_btn.classList.remove('active');
+                
+                if (day_btn) day_btn.classList.remove('active');
+                if (month_btn) month_btn.classList.remove('active');
+                if (week_btn) week_btn.classList.remove('active');
+
                 if (timeRange === 'week') {
                     minDate.setDate(now.getDate() - 7);
-                    day_btn.classList.remove('active');
-                    month_btn.classList.remove('active');
-                    week_btn.classList.add('active');
+                    if (week_btn) week_btn.classList.add('active');
                     xAxisUnit = 'day';
                 } else if (timeRange === 'month') {
                     minDate.setMonth(now.getMonth() - 1);
-                    day_btn.classList.remove('active');
-                    month_btn.classList.add('active');
-                    week_btn.classList.remove('active');
+                    if (month_btn) month_btn.classList.add('active');
                     xAxisUnit = 'day';
                 } else {
                     // מצב 'day' - היום הנוכחי (מחצות עד חצות)
                     minDate.setHours(0, 0, 0, 0);      // תחילת הציר: 00:00
                     maxDate.setHours(23, 59, 59, 999); // סוף הציר: סוף היום
                     xAxisUnit = 'hour';
-                    day_btn.classList.add('active');
-                    month_btn.classList.remove('active');
-                    week_btn.classList.remove('active');
+                    if (day_btn) day_btn.classList.add('active');
                 }
                 timeSeriesChart = new Chart(ctx, {
                     type: 'line',
@@ -116,8 +116,14 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    document.getElementById('server_battery_health').textContent = data.server_battery_level;
-                    document.getElementById('server_timestamp').textContent = data.server_timestamp;
+                    const serverBatteryHealth = document.getElementById('server_battery_health');
+                    if (serverBatteryHealth) {
+                        serverBatteryHealth.textContent = data.server_battery_level;
+                    }
+                    const serverTimestamp = document.getElementById('server_timestamp');
+                    if (serverTimestamp) {
+                        serverTimestamp.textContent = data.server_timestamp;
+                    }
                     // 1. עדכון הכרטיסיות
                     for (const [deviceId, telemetry] of Object.entries(data.devices)) {
                         document.querySelectorAll(`[data-live="voltage"][data-device="${deviceId}"]`)
