@@ -81,7 +81,7 @@ def api_receive_server(request):
             
         # שמירת הנתון במסד הנתונים
         server_health = ServerHealth.objects.create(battery_level=percentage)
-        
+        server_health.save()
         return JsonResponse({
             'status': 'success', 
             'message': 'Data saved correctly',
