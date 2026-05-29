@@ -91,6 +91,8 @@ def api_receive_telemetry(request):
             current_value = read_ads1115(channel=1)
             if current_value is None:
                 current_value = 0.0
+            else:
+                current_value /= 2
 
             # 2. שמירת הנתונים: המכשיר חוקי, בוא נשמור את הטלמטריה
             Telemetry.objects.create(
