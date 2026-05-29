@@ -145,7 +145,8 @@ def dashboard_view(request):
     timestamp = naturaltime(server.timestamp) if server is not None else None
     context = {
         'devices': user_devices,
-        'server': real_battery_level,
+        'server': server,
+        'batt_level': real_battery_level,
         'timestamp': timestamp
     }
     
