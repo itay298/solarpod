@@ -11,18 +11,18 @@ MAC_ADDRESS = "123456"
 def generate_fake_data():
     """
     מייצר נתוני טלמטריה הגיוניים למערכת סולארית, 
-    כולל חישוב אחוז סוללה מציאותי המבוסס על המתח.
+    כולל חישוב אחוז סוללה מציאותי המבוסס על המתח (סוללת 6V).
     """
-    # זיוף מתח (11.5V נחשב ריק, 13.8V נחשב מלא)
-    voltage = round(random.uniform(11.5, 13.8), 2)
+    # זיוף מתח לסוללת 6V (5.25V נחשב ריק, 6.37V נחשב מלא)
+    voltage = round(random.uniform(5.25, 6.37), 2)
     
     # חישוב אחוז הסוללה לפי המתח (מיפוי מתמטי מ-0% עד 100%)
-    battery_level = round(((voltage - 11.5) / (13.8 - 11.5)) * 100, 1)
+    battery_level = round(((voltage - 5.25) / (6.37 - 5.25)) * 100, 1)
     # מוודאים שהאחוז לא יחרוג מגבולות ה-0-100 במקרה של סטייה
     battery_level = max(0.0, min(100.0, battery_level))
     
-    # זיוף זרם והספק
-    current = round(random.uniform(0.5, 2.5), 4)
+    # זיוף זרם והספק (מותאם לסוללה קטנה 1.3Ah)
+    current = round(random.uniform(0.05, 0.5), 4)
     power = round(voltage * current, 3)
     
     return {
@@ -30,7 +30,7 @@ def generate_fake_data():
         "voltage": voltage,
         "current": current,
         "power": power,
-        "battery_level": battery_level  # <-- הנתון החדש שנוסף!
+        "battery_level": battery_level
     }
 
 print("☀️ Starting SolarPod Hardware Simulator...")

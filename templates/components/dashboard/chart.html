@@ -108,7 +108,30 @@
     }
 
     function startLiveUpdates() {
-        // מגדירים לולאה שתרוץ כל 5 שניות (5000 מילישניות)
+        // שליחת בקשה לעדכון נתוני השרת (קריאה מהחיישן) כל דקה
+        setInterval(() => {
+            const serverUpdateUrl = `{% url "dashboard:api_receive_server" %}`;
+            fetch(serverUpdateUrl, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        console.log(`[${new Date().toLocaleTimeString()}] Server hardware data refreshed:`, data);
+                        
+                        // עדכון מיידי של התצוגה ב-Dashboard
+                        const serverBatteryHealth = document.getElementById('server_battery_health');
+                        if (serverBatteryHealth) {
+                            serverBatteryHealth.textContent = data.battery_level;
+                        }
+                        const serverTimestamp = document.getElementById('server_timestamp');
+                        if (serverTimestamp) {
+                            serverTimestamp.textContent = data.timestamp;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error refreshing server hardware data:', error));
+        }, 60000);
+
+        // מגדירים לולאה שתרוץ כל 10 שניות (10000 מילישניות) לעדכון ה-UI
         setInterval(() => {
             // פונים ל-API הכללי שמביא את כל המכשירים
             const liveUrl = `{% url "dashboard:api_get_all_latest" %}`;

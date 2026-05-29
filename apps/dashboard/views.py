@@ -60,18 +60,39 @@ def get_chart_data(request, device_id, metric):
 
 @csrf_exempt
 def api_receive_server(request):
-    if request.method == 'POST':
-        try:
-            real_battery_voltage = read_ads1115(channel=0)
-            ServerHealth.objects.create(battery_level=real_battery_voltage)
-            return JsonResponse({'status': 'success', 'message': 'Data saved correctly'}, status=201)
+    try:
+        # קריאת המתח מהפין (ADS1115 מוגדר לטווח של 4.096V)
+        # מכיוון שמדובר בסוללת 6V, אנו מניחים שימוש במחלק מתח (למשל 1:1)
+        pin_voltage = read_ads1115(channel=0)
+        battery_voltage = pin_voltage * 2
         
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        # לוגיקת אחוזים עבור סוללת 6V:
+        # 5.25V נחשב ל-0% (ריק)
+        # 6.37V נחשב ל-100% (מלא)
+        min_v = 5.25
+        max_v = 6.37
+        
+        if battery_voltage <= min_v:
+            percentage = 0
+        elif battery_voltage >= max_v:
+            percentage = 100
+        else:
+            percentage = int(((battery_voltage - min_v) / (max_v - min_v)) * 100)
+            
+        # שמירת הנתון במסד הנתונים
+        server_health = ServerHealth.objects.create(battery_level=percentage)
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': 'Data saved correctly',
+            'battery_level': server_health.battery_level,
+            'voltage': round(battery_voltage, 2),
+            'timestamp': naturaltime(server_health.timestamp)
+        }, status=201)
     
-    return JsonResponse({'error': 'Method not allowed. Use POST.'}, status=405)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 @csrf_exempt
 def api_receive_telemetry(request):
     # אנחנו מוכנים לקבל רק בקשות מטיפוס POST ששולחות נתונים
