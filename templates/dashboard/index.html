@@ -12,7 +12,7 @@
         <div class="col-lg-6 mx-auto">
         <p class="lead mb-4">{% translate "Here you can see the hub's stats" %}</p>
         {% if server %}
-        <p class="lead mb-4">{% blocktranslate %}The main battery precentage is: <span id="server_battery_health">{{ batt_level }}</span>%{% endblocktranslate %}</p>
+        <p class="lead mb-4">{% translate "The main battery precentage is:" %} <span id="server_battery_health">{{ batt_level }}</span>%</p>
         <p class="lead mb-4">{% blocktranslate %}last update: <span id="server_timestamp">{{ timestamp }}</span>{% endblocktranslate %}</p>
         {% else %}
         <p class="lead mb-4">{% translate "There is no data on the server!" %}</p>

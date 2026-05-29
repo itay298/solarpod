@@ -330,13 +330,8 @@ msgid "Here you can see the hub's stats"
 msgstr "כאן אתה יכול לראות את הנתונים הסטטיסטיים של הרכזת"
 
 #: .\templates\dashboard\index.html:15
-#, python-format
-msgid ""
-"The main battery precentage is: <span "
-"id=\"server_battery_health\">%(server)s</span>%%"
-msgstr ""
-"אחוז הסוללה הראשית הוא: <span "
-"id=\"server_battery_health\">%(server)s</span>%%"
+msgid "The main battery precentage is:"
+msgstr ":אחוז הסוללה הראשית"
 
 #: .\templates\dashboard\index.html:16
 #, python-format
