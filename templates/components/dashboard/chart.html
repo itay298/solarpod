@@ -28,6 +28,7 @@
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
+                console.log(`[${new Date().toLocaleTimeString()}] Chart data received for ${currentMetric}:`, data);
                 if (timeSeriesChart) {
                     timeSeriesChart.destroy();
                 }
@@ -116,6 +117,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
+                    console.log(`[${new Date().toLocaleTimeString()}] Bulk telemetry update received:`, data);
                     const serverBatteryHealth = document.getElementById('server_battery_health');
                     if (serverBatteryHealth) {
                         serverBatteryHealth.textContent = data.server_battery_level;
